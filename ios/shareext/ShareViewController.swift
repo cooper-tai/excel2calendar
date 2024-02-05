@@ -23,14 +23,17 @@ class ShareViewController: SLComposeServiceViewController {
     let fileURLType = kUTTypeFileURL as String;
 
     override func isContentValid() -> Bool {
+        print("ShareViewController isContentValid");
         return true
     }
 
     override func viewDidLoad() {
+        print("ShareViewController viewDidLoad");
         super.viewDidLoad();
     }
 
     override func viewDidAppear(_ animated: Bool) {
+        print("ShareViewController viewDidAppear");
         super.viewDidAppear(animated)
 
         // This is called after the user selects Post. Do the upload of contentText and/or NSExtensionContext attachments.
@@ -54,7 +57,7 @@ class ShareViewController: SLComposeServiceViewController {
     }
 
     override func didSelectPost() {
-        print("didSelectPost");
+        print("ShareViewController didSelectPost");
     }
 
     override func configurationItems() -> [Any]! {
@@ -207,7 +210,7 @@ class ShareViewController: SLComposeServiceViewController {
     }
 
     private func redirectToHostApp(type: RedirectType) {
-        let url = URL(string: "ShareMedia://dataUrl=\(sharedKey)#\(type)")
+        let url = URL(string: "excel2Calendar://dataUrl=\(sharedKey)#\(type)")
         var responder = self as UIResponder?
         let selectorOpenURL = sel_registerName("openURL:")
 
