@@ -54,7 +54,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>excel2calendar</string>
+				<string>ShareMedia</string>
 			</array>
 		</dict>
 	</array>

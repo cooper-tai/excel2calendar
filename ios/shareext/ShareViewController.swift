@@ -9,6 +9,7 @@ import UIKit
 import Social
 import MobileCoreServices
 import Photos
+import Foundation
 
 class ShareViewController: SLComposeServiceViewController {
     // TODO: IMPORTANT: This should be your host app bundle identifier
@@ -23,17 +24,17 @@ class ShareViewController: SLComposeServiceViewController {
     let fileURLType = kUTTypeFileURL as String;
 
     override func isContentValid() -> Bool {
-        print("ShareViewController isContentValid");
+        NSLog("ShareViewController isContentValid");
         return true
     }
 
     override func viewDidLoad() {
-        print("ShareViewController viewDidLoad");
+        NSLog("ShareViewController viewDidLoad");
         super.viewDidLoad();
     }
 
     override func viewDidAppear(_ animated: Bool) {
-        print("ShareViewController viewDidAppear");
+        NSLog("ShareViewController viewDidAppear");
         super.viewDidAppear(animated)
 
         // This is called after the user selects Post. Do the upload of contentText and/or NSExtensionContext attachments.
@@ -180,7 +181,10 @@ class ShareViewController: SLComposeServiceViewController {
                     .appendingPathComponent(fileName)
                 let copied = this.copyFile(at: url, to: newPath)
                 if (copied) {
+                    NSLog("ShareViewController file copied")
                     this.sharedMedia.append(SharedMediaFile(path: newPath.absoluteString, thumbnail: nil, duration: nil, type: .file))
+                } else {
+                    NSLog("ShareViewController file copied failed")
                 }
 
                 if index == (content.attachments?.count)! - 1 {
@@ -210,7 +214,8 @@ class ShareViewController: SLComposeServiceViewController {
     }
 
     private func redirectToHostApp(type: RedirectType) {
-        let url = URL(string: "excel2Calendar://dataUrl=\(sharedKey)#\(type)")
+        let url = URL(string: "ShareMedia://dataUrl=\(sharedKey)#\(type)")
+        NSLog("ShareViewController redirectToHostApp url")
         var responder = self as UIResponder?
         let selectorOpenURL = sel_registerName("openURL:")
 
