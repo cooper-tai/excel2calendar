@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:io';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -5,13 +6,18 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:collection/collection.dart';
 import 'package:spreadsheet_decoder/spreadsheet_decoder.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 abstract class CalendarAppEvent {}
 
 class CalendarReceiveFile extends CalendarAppEvent {}
 
 class WorkingEvent {
-  Map<DateTime, List<(String, String)>> eventMap = {};
+  LinkedHashMap<DateTime, List<(String, String)>> eventMap = LinkedHashMap(
+    equals: isSameDay,
+    hashCode: (key) => key.day * 1000000 + key.month * 10000 + key.year,
+  );
+  List<String> employeeIDs = [];
   WorkingEvent();
 
   void toLog() {
@@ -94,10 +100,13 @@ class CalendarAppBloc extends Bloc<CalendarAppEvent, WorkingEvent> {
           if (row[0] != null && row[0] is String && row[0].contains('ZA')) {
             String employeeID =
                 row[0].toString().replaceAll(RegExp(r'\s+\b|\b\s'), '');
+            resultEvents.employeeIDs.add(employeeID);
             for (var indexD in indexedDays) {
               int index = indexD.$1;
               int days = indexD.$2;
-              DateTime anchor = DateTime(year, month, days);
+              DateTime anchor = DateTime(
+                      year, month, days)
+                  ;
               if (resultEvents.eventMap.containsKey(anchor)) {
                 resultEvents.eventMap[anchor]!.add((
                   employeeID,
