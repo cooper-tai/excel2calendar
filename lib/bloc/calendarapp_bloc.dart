@@ -49,6 +49,9 @@ class CalendarAppBloc extends Bloc<CalendarAppEvent, WorkingEvent> {
     }
     final appDoc = await getApplicationDocumentsDirectory();
     final sourceDir = Directory(p.join(appDoc.path, source));
+    if (!sourceDir.existsSync()) {
+      sourceDir.createSync();
+    }
     FileSystemEntity? foundFile = sourceDir.listSync().firstWhereOrNull((file) {
       final fileName = file.path.split('/').last;
       int yearIndex = fileName.indexOf('年');
