@@ -137,8 +137,7 @@ class _CalendarState extends State<CalendarPage> {
                           workingEvent.eventMap[day]?.toList();
                       if (workings != null && workings.isNotEmpty) {
                         workings.removeWhere((e) =>
-                            e.$1 != _focusedEmployee ||
-                            (e.$2.contains('休') || e.$2.contains('例')));
+                            e.$1 != _focusedEmployee || _isHoliday(e.$2));
                         events.addAll(workings.map((e) => e.$2).toList());
                       }
                     }
@@ -225,7 +224,7 @@ class _CalendarState extends State<CalendarPage> {
       working.contains('休') || working.contains('例');
 
   (String, String) _formattedEvent(String event) {
-    String location = '';
+    String location = event;
     String time = '';
     int indexLoc = event.indexOf(')');
     if (indexLoc >= 0) {
@@ -258,7 +257,11 @@ class _CalendarState extends State<CalendarPage> {
                     return const Column(
                       children: [
                         SizedBox(height: 8.0),
-                        Text('其他員工', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600),),
+                        Text(
+                          '其他員工',
+                          style: TextStyle(
+                              fontSize: 20.0, fontWeight: FontWeight.w600),
+                        ),
                         SizedBox(height: 8.0),
                         Divider(),
                       ],
