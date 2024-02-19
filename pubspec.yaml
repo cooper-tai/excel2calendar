@@ -95,3 +95,18 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+  fonts:
+    - family: GloriaHallelujah
+      fonts:
+        - asset: assets/fonts/GloriaHallelujah-Regular.ttf
+    - family: Exo
+      fonts:
+        - asset: assets/fonts/Exo-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Exo-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Exo-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Exo-Bold.ttf
+          weight: 700
+

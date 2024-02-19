@@ -84,6 +84,7 @@ class _CalendarAppState extends State<CalendarApp> {
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color.fromRGBO(18, 55, 42, 1.0),
         ),
+        fontFamily: 'Exo',
       ),
       home: BlocProvider(
         create: (context) => CalendarBloc(),

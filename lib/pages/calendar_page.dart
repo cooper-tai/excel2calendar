@@ -46,6 +46,13 @@ class _CalendarState extends State<CalendarPage> {
                   : DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
                         iconEnabledColor: Colors.white70,
+                        dropdownColor: Theme.of(context).colorScheme.secondary,
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.w500,
+                          fontFamily: 'Exo',
+                        ),
                         items: workingEvent.employeeIDs
                             .map((e) => DropdownMenuItem<String>(
                                   value: e,
@@ -76,13 +83,11 @@ class _CalendarState extends State<CalendarPage> {
                   },
                   startingDayOfWeek: StartingDayOfWeek.monday,
                   calendarStyle: const CalendarStyle(
-                    holidayTextStyle:
-                        TextStyle(color: Colors.white),
+                    holidayTextStyle: TextStyle(color: Colors.white),
                     holidayDecoration: BoxDecoration(
-                      color: Color(0xFFEF9A9A),//Color(0xFFD04848),
+                      color: Color(0xFFEF9A9A), //Color(0xFFD04848),
                       border: Border.fromBorderSide(
-                        BorderSide(
-                            color: Color(0xFFEF9A9A), width: 1.4),
+                        BorderSide(color: Color(0xFFEF9A9A), width: 1.4),
                       ),
                       shape: BoxShape.circle,
                     ),
