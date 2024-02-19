@@ -91,6 +91,37 @@ class _CalendarState extends State<CalendarPage> {
                       ),
                       shape: BoxShape.circle,
                     ),
+                    markersAutoAligned: false,
+                    markersOffset: PositionedOffset(bottom: -5.0),
+                    selectedTextStyle: TextStyle(color: Color(0xFF5C6BC0), fontWeight: FontWeight.bold, fontSize: 18.0),
+                    selectedDecoration: BoxDecoration(color: Colors.transparent),
+                    todayDecoration: BoxDecoration(color: Color.fromARGB(70, 25, 76, 37), shape: BoxShape.circle),
+                  ),
+                  rowHeight: 90.0,
+                  calendarBuilders: CalendarBuilders(
+                    singleMarkerBuilder: (context, day, event) {
+                      var formattedEvent = _formattedEvent(event as String);
+                      TextStyle? style = isSameDay(_selectedTime, day)
+                          ? const TextStyle(
+                              color: Color.fromARGB(255, 115, 115, 44),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16.0,
+                            )
+                          : null;
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            formattedEvent.$1,
+                            style: style,
+                          ),
+                          Text(
+                            formattedEvent.$2,
+                            style: style,
+                          ),
+                        ],
+                      );
+                    },
                   ),
                   eventLoader: (day) {
                     List<String> events = [];
@@ -178,5 +209,16 @@ class _CalendarState extends State<CalendarPage> {
             ));
       },
     );
+  }
+
+  (String, String) _formattedEvent(String event) {
+    String location = '';
+    String time = '';
+    int indexLoc = event.indexOf(')');
+    if (indexLoc >= 0) {
+      location = event.substring(0, indexLoc + 1);
+      time = event.substring(indexLoc + 1);
+    }
+    return (location, time);
   }
 }
