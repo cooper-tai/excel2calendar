@@ -43,6 +43,7 @@ dependencies:
   path: ^1.8.3
   spreadsheet_decoder: ^2.2.0
   shared_preferences: ^2.2.2
+  intl: ^0.19.0
 
 dev_dependencies:
   flutter_test:
