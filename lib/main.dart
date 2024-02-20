@@ -3,13 +3,16 @@ import 'dart:io';
 
 import 'package:excel2calendar/bloc/calendarapp_bloc.dart';
 import 'package:excel2calendar/pages/calendar_page.dart';
+import 'package:excel2calendar/utils/sharedpreference_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SharedPreferencesUtil.init();
   runApp(BlocProvider(
     create: (context) => CalendarAppBloc(),
     child: const CalendarApp(),

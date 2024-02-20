@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:excel2calendar/bloc/calendarapp_bloc.dart';
+import 'package:excel2calendar/utils/sharedpreference_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -17,14 +18,16 @@ class _CalendarState extends State<CalendarPage> {
   late CalendarAppBloc _calendarAppBloc;
   late String _focusedEmployee;
   late ValueNotifier<List<(String, String)>> _selectedEventNotifier;
+  late SharedPreferencesUtil _sharedPreferencesUtil;
 
   @override
   void initState() {
     super.initState();
+    _sharedPreferencesUtil = SharedPreferencesUtil.instance;
     _focusedTime = DateTime.now();
     _selectedTime = _focusedTime;
     _calendarAppBloc = BlocProvider.of<CalendarAppBloc>(context);
-    _focusedEmployee = '';
+    _focusedEmployee = _sharedPreferencesUtil.loadEmployeeID();
     _selectedEventNotifier = ValueNotifier([]);
   }
 
@@ -33,9 +36,6 @@ class _CalendarState extends State<CalendarPage> {
     return BlocBuilder<CalendarAppBloc, WorkingEvent>(
       bloc: _calendarAppBloc,
       builder: (context, workingEvent) {
-        if (workingEvent.employeeIDs.isEmpty) {
-          _focusedEmployee = '';
-        }
         if (workingEvent.employeeIDs.isNotEmpty && _focusedEmployee.isEmpty) {
           _focusedEmployee = workingEvent.employeeIDs[0];
         }
@@ -63,6 +63,8 @@ class _CalendarState extends State<CalendarPage> {
                         value: _focusedEmployee,
                         onChanged: (value) => setState(() {
                           _focusedEmployee = value ?? '';
+                          _sharedPreferencesUtil
+                              .saveEmployeeID(_focusedEmployee);
                           if (workingEvent.eventMap.isNotEmpty) {
                             _selectedEventNotifier.value =
                                 workingEvent.eventMap[_selectedTime] ?? [];
