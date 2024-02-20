@@ -164,12 +164,8 @@ class _CalendarState extends State<CalendarPage> {
                           false) {
                         Future.delayed(
                           const Duration(milliseconds: 100),
-                          () {
-                            List<(String, String)> sameDayWorkings =
-                                workingEvent.eventMap[_selectedTime] ?? [];
-                            _selectedEventNotifier.value = sameDayWorkings;
-                            _showSameDayWorkings(sameDayWorkings.toList());
-                          },
+                          () => _selectedEventNotifier.value =
+                              workingEvent.eventMap[_selectedTime] ?? [],
                         );
                       }
                       return true;
@@ -180,6 +176,12 @@ class _CalendarState extends State<CalendarPage> {
                     setState(() {
                       _selectedTime = selectedDay;
                     });
+                    if (workingEvent.eventMap[_selectedTime]?.isNotEmpty ??
+                        false) {
+                      List<(String, String)> sameDayWorkings =
+                          workingEvent.eventMap[_selectedTime] ?? [];
+                      _showSameDayWorkings(sameDayWorkings.toList());
+                    }
                   },
                   onPageChanged: (focusedDay) {
                     setState(() {
