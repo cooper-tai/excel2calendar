@@ -77,6 +77,7 @@ class _CalendarState extends State<CalendarPage> {
             body: Column(
               children: [
                 TableCalendar(
+                  locale: 'zh_CN',
                   focusedDay: _focusedTime,
                   currentDay: DateTime.now(),
                   firstDay: DateTime(_focusedTime.year - 3),
