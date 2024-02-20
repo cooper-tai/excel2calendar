@@ -184,6 +184,8 @@ class _CalendarState extends State<CalendarPage> {
                   onPageChanged: (focusedDay) {
                     setState(() {
                       _focusedTime = focusedDay;
+                      _calendarAppBloc.add(CalendarMonthChanged(
+                          _focusedTime.year, _focusedTime.month));
                     });
                   },
                 ),

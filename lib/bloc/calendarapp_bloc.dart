@@ -12,6 +12,12 @@ abstract class CalendarAppEvent {}
 
 class CalendarReceiveFile extends CalendarAppEvent {}
 
+class CalendarMonthChanged extends CalendarAppEvent {
+  final int year;
+  final int month;
+  CalendarMonthChanged(this.year, this.month);
+}
+
 class WorkingEvent {
   LinkedHashMap<DateTime, List<(String, String)>> eventMap = LinkedHashMap(
     equals: isSameDay,
@@ -31,20 +37,25 @@ class WorkingEvent {
 class CalendarAppBloc extends Bloc<CalendarAppEvent, WorkingEvent> {
   static const String source = 'source';
   final int _baseYear = 1911;
-  Map<DateTime, WorkingEvent> _cachedEventMap = {};
+  late WorkingEvent _workingEvent;
 
   CalendarAppBloc() : super(WorkingEvent()) {
+    _workingEvent = WorkingEvent();
     _loadFile(DateTime.now());
+    on<CalendarMonthChanged>((event, emit) {
+      _loadFile(DateTime(event.year, event.month));
+    });
   }
 
   void _loadFile(DateTime time, {bool isForceUpdate = false}) async {
     int tranditionalYear = time.year - _baseYear;
     int month = time.month;
-    WorkingEvent? cachedEvents =
-        _cachedEventMap[DateTime(time.year, time.month)];
-    if (cachedEvents != null && !isForceUpdate) {
+    if (_workingEvent.eventMap[time] != null && !isForceUpdate) {
+      WorkingEvent emitEvent = WorkingEvent()
+        ..employeeIDs.addAll(_workingEvent.employeeIDs)
+        ..eventMap.addAll(_workingEvent.eventMap);
       // ignore: invalid_use_of_visible_for_testing_member
-      emit(cachedEvents);
+      emit(emitEvent);
       return;
     }
     final appDoc = await getApplicationDocumentsDirectory();
@@ -107,9 +118,7 @@ class CalendarAppBloc extends Bloc<CalendarAppEvent, WorkingEvent> {
             for (var indexD in indexedDays) {
               int index = indexD.$1;
               int days = indexD.$2;
-              DateTime anchor = DateTime(
-                      year, month, days)
-                  ;
+              DateTime anchor = DateTime(year, month, days);
               if (resultEvents.eventMap.containsKey(anchor)) {
                 resultEvents.eventMap[anchor]!.add((
                   employeeID,
@@ -127,9 +136,17 @@ class CalendarAppBloc extends Bloc<CalendarAppEvent, WorkingEvent> {
           }
         }
       }
+      if (resultEvents.eventMap.isNotEmpty) {
+        resultEvents.eventMap.addAll(_workingEvent.eventMap);
+        for (var id in _workingEvent.employeeIDs) {
+          if (!resultEvents.employeeIDs.contains(id)) {
+            resultEvents.employeeIDs.add(id);
+          }
+        }
+      }
       // ignore: invalid_use_of_visible_for_testing_member
       emit(resultEvents);
-      _cachedEventMap[DateTime(year, month)] = resultEvents;
+      _workingEvent = resultEvents;
     }
   }
 }

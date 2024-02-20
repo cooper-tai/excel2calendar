@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:excel2calendar/bloc/calendar_bloc.dart';
 import 'package:excel2calendar/bloc/calendarapp_bloc.dart';
 import 'package:excel2calendar/pages/calendar_page.dart';
 import 'package:flutter/material.dart';
@@ -69,7 +68,23 @@ class _CalendarAppState extends State<CalendarApp> {
         if (isExist) {
           String fileName = fromPath.split('/').last;
           fileName = Uri.decodeComponent(fileName);
-          srcFile.copy('${dstDir.path}/$fileName');
+          srcFile.copy('${dstDir.path}/$fileName').then((newPath) {
+            int yearIndex = fileName.indexOf('年');
+            int monthIndex = fileName.indexOf('月');
+            if (yearIndex < monthIndex) {
+              int fileYear =
+                  int.tryParse(fileName.substring(0, yearIndex)) ?? 0;
+              int fileMonth =
+                  int.tryParse(fileName.substring(yearIndex + 1, monthIndex)) ??
+                      0;
+              if (fileYear > 0 && fileMonth > 0) {
+                _calendarAppBloc
+                    .add(CalendarMonthChanged(fileYear + 1911, fileMonth));
+              }
+            } else {
+              print('Failed to parse $fileName from 3rd shared');
+            }
+          });
         }
       });
     }
@@ -86,10 +101,7 @@ class _CalendarAppState extends State<CalendarApp> {
         ),
         fontFamily: 'Exo',
       ),
-      home: BlocProvider(
-        create: (context) => CalendarBloc(),
-        child: const CalendarPage(),
-      ),
+      home: const CalendarPage(),
     );
   }
 }
