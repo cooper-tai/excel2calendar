@@ -99,15 +99,25 @@ class CalendarAppBloc extends Bloc<CalendarAppEvent, WorkingEvent> {
       for (List<dynamic> row in (sheet?.rows ?? [])) {
         if (row.isNotEmpty) {
           // case of indexed days
-          if (row[0] == 'V2') {
-            row.forEachIndexed((index, data) {
-              if (data != null) {
-                int? days = int.tryParse(data.toString());
-                if (days != null) {
-                  indexedDays.add((index, days));
-                }
+          if (row[0] is String && row[0].startsWith('V')) {
+            bool isDaysRow = row[0].length >= 1;
+            if (row[0].length > 1) {
+              String resetValue = row[0].substring(1);
+              if (int.tryParse(resetValue) == null) {
+                isDaysRow = false;
               }
-            });
+            }
+            if (isDaysRow) {
+              row.forEachIndexed((index, data) {
+                if (data != null) {
+                  int? days = int.tryParse(data.toString()) ??
+                      double.tryParse(data.toString())?.toInt();
+                  if (days != null) {
+                    indexedDays.add((index, days));
+                  }
+                }
+              });
+            }
           }
 
           // case of employee ID
