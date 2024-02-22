@@ -248,37 +248,67 @@ class _CalendarState extends State<CalendarPage> {
       if (!_isHoliday(focusedEmployeeEvent.$2)) {
         final formattedEvent = _formattedEvent(focusedEmployeeEvent.$2);
         String location = formattedEvent.$1;
+        String terminal = location.split('(').first;
         String time = formattedEvent.$2;
-        sameDayWorkings.retainWhere((events) {
-          return events.$1 != _focusedEmployee &&
-              _formattedEvent(events.$2).$1 == location;
-        });
-        if (sameDayWorkings.isNotEmpty) {
+        List<(String, String)> sameTerminal = sameDayWorkings
+            .where((events) =>
+                events.$1 != _focusedEmployee &&
+                _formattedEvent(events.$2).$1.split('(').first == terminal)
+            .toList();
+        List<(String, String)> sameLocation = sameTerminal.where((events) {
+          return _formattedEvent(events.$2).$1 == location;
+        }).toList();
+        if (sameLocation.isNotEmpty) {
+          for (var event in sameLocation) {
+            sameTerminal.removeWhere((e) => e.$1 == event.$1);
+          }
+        }
+
+        if (sameTerminal.isNotEmpty || sameLocation.isNotEmpty) {
           showModalBottomSheet(
             context: context,
             builder: (context) {
-              return ListView.builder(
-                itemCount: sameDayWorkings.length + 1,
-                itemBuilder: (context, index) {
-                  if (index == 0) {
-                    return const Column(
-                      children: [
-                        SizedBox(height: 8.0),
-                        Text(
-                          '其他員工',
-                          style: TextStyle(
-                              fontSize: 20.0, fontWeight: FontWeight.w600),
-                        ),
-                        SizedBox(height: 8.0),
-                        Divider(),
-                      ],
-                    );
-                  }
-                  return ListTile(
-                    title: Text(sameDayWorkings[index - 1].$1),
-                    subtitle: Text(sameDayWorkings[index - 1].$2),
-                  );
-                },
+              return ListView(
+                children: [
+                  if (sameLocation.isNotEmpty) ...[
+                    const SizedBox(height: 8.0),
+                    const Text(
+                      '同櫃台員工',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 8.0),
+                    const Divider(),
+                    ...sameLocation
+                        .map((e) => ListTile(
+                              title: Text(e.$1),
+                              subtitle: Text(e.$2),
+                            ))
+                        .toList(),
+                  ],
+                  if (sameTerminal.isNotEmpty) ...[
+                    const SizedBox(height: 8.0),
+                    const Text(
+                      '同航廈員工',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 8.0),
+                    const Divider(),
+                    ...sameTerminal
+                        .map((e) => ListTile(
+                              title: Text(e.$1),
+                              subtitle: Text(e.$2),
+                            ))
+                        .toList(),
+                  ]
+                ],
               );
             },
           );
