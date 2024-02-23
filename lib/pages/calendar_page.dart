@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:collection/collection.dart';
 import 'package:excel2calendar/bloc/calendarapp_bloc.dart';
 import 'package:excel2calendar/utils/sharedpreference_util.dart';
@@ -245,74 +247,86 @@ class _CalendarState extends State<CalendarPage> {
     final focusedEmployeeEvent = sameDayWorkings
         .firstWhereOrNull((events) => events.$1 == _focusedEmployee);
     if (focusedEmployeeEvent != null) {
-      if (!_isHoliday(focusedEmployeeEvent.$2)) {
-        final formattedEvent = _formattedEvent(focusedEmployeeEvent.$2);
-        String location = formattedEvent.$1;
-        String terminal = location.split('(').first;
-        String time = formattedEvent.$2;
-        List<(String, String)> sameTerminal = sameDayWorkings
-            .where((events) =>
-                events.$1 != _focusedEmployee &&
-                _formattedEvent(events.$2).$1.split('(').first == terminal)
-            .toList();
-        List<(String, String)> sameLocation = sameTerminal.where((events) {
-          return _formattedEvent(events.$2).$1 == location;
-        }).toList();
-        if (sameLocation.isNotEmpty) {
-          for (var event in sameLocation) {
-            sameTerminal.removeWhere((e) => e.$1 == event.$1);
+      LinkedHashMap<String, List<(String, String)>> locationMap =
+          LinkedHashMap();
+      String holidayKey = '休';
+      locationMap[holidayKey] = [];
+
+      bool isFocusedEmployeeHoliday = _isHoliday(focusedEmployeeEvent.$2);
+      final formattedEvent = _formattedEvent(focusedEmployeeEvent.$2);
+      String perferLoc =
+          isFocusedEmployeeHoliday ? holidayKey : formattedEvent.$1;
+
+      for (var workingEvent in sameDayWorkings) {
+        if (workingEvent.$1 != _focusedEmployee) {
+          bool isHoliday = _isHoliday(workingEvent.$2);
+          String workingLoc =
+              isHoliday ? holidayKey : _formattedEvent(workingEvent.$2).$1;
+          if (locationMap[workingLoc] != null) {
+            locationMap[workingLoc]!.add(workingEvent);
+          } else {
+            locationMap[workingLoc] = [workingEvent];
           }
         }
+      }
 
-        if (sameTerminal.isNotEmpty || sameLocation.isNotEmpty) {
-          showModalBottomSheet(
-            context: context,
-            builder: (context) {
-              return ListView(
-                children: [
-                  if (sameLocation.isNotEmpty) ...[
-                    const SizedBox(height: 8.0),
-                    const Text(
-                      '同櫃台員工',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.w600,
-                      ),
+      if (locationMap.isNotEmpty) {
+        List<(String, String)> perferWorking =
+            locationMap.remove(perferLoc) ?? [];
+        showModalBottomSheet(
+          context: context,
+          builder: (context) {
+            return ListView(
+              children: [
+                if (perferWorking.isNotEmpty) ...[
+                  const SizedBox(height: 8.0),
+                  Text(
+                    isFocusedEmployeeHoliday ? '同休假員工' : '同櫃台員工',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.w600,
                     ),
-                    const SizedBox(height: 8.0),
-                    const Divider(),
-                    ...sameLocation
-                        .map((e) => ListTile(
-                              title: Text(e.$1),
-                              subtitle: Text(e.$2),
-                            ))
-                        .toList(),
-                  ],
-                  if (sameTerminal.isNotEmpty) ...[
-                    const SizedBox(height: 8.0),
-                    const Text(
-                      '同航廈員工',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 8.0),
-                    const Divider(),
-                    ...sameTerminal
-                        .map((e) => ListTile(
-                              title: Text(e.$1),
-                              subtitle: Text(e.$2),
-                            ))
-                        .toList(),
-                  ]
+                  ),
+                  const SizedBox(height: 8.0),
+                  const Divider(),
+                  ...perferWorking
+                      .map((e) => ListTile(
+                            title: Text(e.$1),
+                            subtitle: Text(e.$2),
+                          ))
+                      .toList(),
                 ],
-              );
-            },
-          );
-        }
+                if (locationMap.isNotEmpty) ...[
+                  ...locationMap.entries.map<Widget>((entry) {
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(height: 8.0),
+                        Text(
+                          entry.key == holidayKey ? '休假員工' : entry.key,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 8.0),
+                        const Divider(),
+                        ...entry.value
+                            .map((e) => ListTile(
+                                  title: Text(e.$1),
+                                  subtitle: Text(e.$2),
+                                ))
+                            .toList(),
+                      ],
+                    );
+                  }).toList(),
+                ]
+              ],
+            );
+          },
+        );
       }
     }
   }

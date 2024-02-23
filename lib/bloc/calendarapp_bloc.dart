@@ -24,6 +24,7 @@ class WorkingEvent {
     hashCode: (key) => key.day * 1000000 + key.month * 10000 + key.year,
   );
   List<String> employeeIDs = [];
+  List<String> locations = ['後線'];
   WorkingEvent();
 
   void toLog() {
@@ -129,18 +130,19 @@ class CalendarAppBloc extends Bloc<CalendarAppEvent, WorkingEvent> {
               int index = indexD.$1;
               int days = indexD.$2;
               DateTime anchor = DateTime(year, month, days);
+              String event =
+                  row[index].toString().replaceAll(RegExp(r'\s+\b|\b\s'), '');
+              int locIndex = event.indexOf(')');
+              if (locIndex >= 0) {
+                String location = event.substring(0, locIndex + 1);
+                if (!resultEvents.locations.contains(location)) {
+                  resultEvents.locations.add(location);
+                }
+              }
               if (resultEvents.eventMap.containsKey(anchor)) {
-                resultEvents.eventMap[anchor]!.add((
-                  employeeID,
-                  row[index].toString().replaceAll(RegExp(r'\s+\b|\b\s'), '')
-                ));
+                resultEvents.eventMap[anchor]!.add((employeeID, event));
               } else {
-                resultEvents.eventMap[anchor] = [
-                  (
-                    employeeID,
-                    row[index].toString().replaceAll(RegExp(r'\s+\b|\b\s'), '')
-                  )
-                ];
+                resultEvents.eventMap[anchor] = [(employeeID, event)];
               }
             }
           }
@@ -151,6 +153,11 @@ class CalendarAppBloc extends Bloc<CalendarAppEvent, WorkingEvent> {
         for (var id in _workingEvent.employeeIDs) {
           if (!resultEvents.employeeIDs.contains(id)) {
             resultEvents.employeeIDs.add(id);
+          }
+        }
+        for (var loc in _workingEvent.locations) {
+          if (!resultEvents.locations.contains(loc)) {
+            resultEvents.locations.add(loc);
           }
         }
       }
