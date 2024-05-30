@@ -38,19 +38,22 @@ class _CalendarAppState extends State<CalendarApp> {
   void initState() {
     super.initState();
     _calendarAppBloc = BlocProvider.of<CalendarAppBloc>(context);
-    _sharingStub = ReceiveSharingIntent.getMediaStream().listen((medias) {
+    _sharingStub =
+        ReceiveSharingIntent.instance.getMediaStream().listen((medias) {
       print('$_logTag received media: ${medias.map((e) => e.path)}');
       if (medias.isNotEmpty) {
         _moveFileToAppDoc(medias[0].path);
       }
+    }, onError: (e) {
+      print('$_logTag onError: $e');
     });
 
-    ReceiveSharingIntent.getInitialMedia().then((medias) {
+    ReceiveSharingIntent.instance.getInitialMedia().then((medias) {
       print('$_logTag get init media: ${medias.map((e) => e.path)}');
       if (medias.isNotEmpty) {
         _moveFileToAppDoc(medias[0].path);
       }
-      ReceiveSharingIntent.reset();
+      ReceiveSharingIntent.instance.reset();
     });
   }
 
@@ -73,7 +76,11 @@ class _CalendarAppState extends State<CalendarApp> {
       srcFile.exists().then((isExist) {
         if (isExist) {
           String fileName = fromPath.split('/').last;
-          fileName = Uri.decodeComponent(fileName);
+          try {
+            fileName = Uri.decodeComponent(fileName);
+          } catch (e) {
+            print('$_logTag uri decode error: $e');
+          }
           srcFile.copy('${dstDir.path}/$fileName').then((newPath) {
             int yearIndex = fileName.indexOf('年');
             int monthIndex = fileName.indexOf('月');
