@@ -103,11 +103,14 @@ class _CalendarState extends State<CalendarPage> {
                         color: Color(0xFF5C6BC0),
                         fontWeight: FontWeight.bold,
                         fontSize: 18.0),
-                    selectedDecoration:
-                        BoxDecoration(color: Colors.transparent),
+                    selectedDecoration: BoxDecoration(
+                      color: Color.fromARGB(50, 60, 71, 75),
+                      shape: BoxShape.circle,
+                    ),
                     todayDecoration: BoxDecoration(
-                        color: Color.fromARGB(70, 25, 76, 37),
-                        shape: BoxShape.circle),
+                      color: Color.fromARGB(70, 25, 76, 37),
+                      shape: BoxShape.circle,
+                    ),
                   ),
                   rowHeight: 90.0,
                   calendarBuilders: CalendarBuilders(
