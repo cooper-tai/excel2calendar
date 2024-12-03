@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:collection/collection.dart';
 import 'package:excel2calendar/bloc/calendarapp_bloc.dart';
 import 'package:excel2calendar/utils/sharedpreference_util.dart';
+import 'package:excel2calendar/widgets/ad_banner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -226,6 +227,7 @@ class _CalendarState extends State<CalendarPage> {
                     },
                   ),
                 ),
+                const AdBanner(),
               ],
             ));
       },

@@ -6,6 +6,7 @@ import 'package:excel2calendar/pages/calendar_page.dart';
 import 'package:excel2calendar/utils/sharedpreference_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+// import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:path_provider/path_provider.dart';
@@ -14,6 +15,7 @@ import 'package:path/path.dart' as p;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SharedPreferencesUtil.init();
+  // unawaited(MobileAds.instance.initialize());
   initializeDateFormatting().then(
     (_) => runApp(BlocProvider(
       create: (context) => CalendarAppBloc(),
