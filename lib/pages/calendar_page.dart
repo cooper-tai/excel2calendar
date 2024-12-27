@@ -83,8 +83,8 @@ class _CalendarState extends State<CalendarPage> {
                   locale: 'zh_CN',
                   focusedDay: _focusedTime,
                   currentDay: DateTime.now(),
-                  firstDay: DateTime(_focusedTime.year - 3),
-                  lastDay: DateTime(_focusedTime.year + 10, 12, 31),
+                  firstDay: DateTime(DateTime.now().year - 1),
+                  lastDay: DateTime(DateTime.now().year + 10, 12, 31),
                   availableCalendarFormats: const {
                     CalendarFormat.month: 'month'
                   },
