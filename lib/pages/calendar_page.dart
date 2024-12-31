@@ -18,6 +18,7 @@ class CalendarPage extends StatefulWidget {
 class _CalendarState extends State<CalendarPage> {
   late DateTime _focusedTime;
   late DateTime _selectedTime;
+  late DateTime _initTime;
   late CalendarAppBloc _calendarAppBloc;
   late String _focusedEmployee;
   late ValueNotifier<List<(String, String)>> _selectedEventNotifier;
@@ -27,6 +28,7 @@ class _CalendarState extends State<CalendarPage> {
   void initState() {
     super.initState();
     _sharedPreferencesUtil = SharedPreferencesUtil.instance;
+    _initTime = DateTime.now();
     _focusedTime = DateTime.now();
     _selectedTime = _focusedTime;
     _calendarAppBloc = BlocProvider.of<CalendarAppBloc>(context);
@@ -83,8 +85,8 @@ class _CalendarState extends State<CalendarPage> {
                   locale: 'zh_CN',
                   focusedDay: _focusedTime,
                   currentDay: DateTime.now(),
-                  firstDay: DateTime(DateTime.now().year - 1),
-                  lastDay: DateTime(DateTime.now().year + 10, 12, 31),
+                  firstDay: DateTime(_initTime.year - 1),
+                  lastDay: DateTime(_initTime.year + 10, 12, 31),
                   availableCalendarFormats: const {
                     CalendarFormat.month: 'month'
                   },
