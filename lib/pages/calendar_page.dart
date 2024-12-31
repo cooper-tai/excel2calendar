@@ -152,6 +152,8 @@ class _CalendarState extends State<CalendarPage> {
                         events.addAll(workings.map((e) => e.$2).toList());
                       }
                     }
+                    // print('eventLoader day: $day');
+                    // print('eventLoader event: $events');
                     return events;
                   },
                   holidayPredicate: (day) {
@@ -195,6 +197,7 @@ class _CalendarState extends State<CalendarPage> {
                     }
                   },
                   onPageChanged: (focusedDay) {
+                    // print('onPageChanged: $focusedDay');
                     setState(() {
                       _focusedTime = focusedDay;
                       _calendarAppBloc.add(CalendarMonthChanged(

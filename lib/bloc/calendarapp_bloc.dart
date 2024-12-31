@@ -44,7 +44,7 @@ class CalendarAppBloc extends Bloc<CalendarAppEvent, WorkingEvent> {
     _workingEvent = WorkingEvent();
     _loadFile(DateTime.now());
     on<CalendarMonthChanged>((event, emit) {
-      _loadFile(DateTime(event.year, event.month));
+      _loadFile(DateTime(event.year, event.month + 1, 0));
     });
   }
 
