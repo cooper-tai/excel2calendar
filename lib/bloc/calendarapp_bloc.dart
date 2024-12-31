@@ -126,12 +126,23 @@ class CalendarAppBloc extends Bloc<CalendarAppEvent, WorkingEvent> {
             String employeeID =
                 row[0].toString().replaceAll(RegExp(r'\s+\b|\b\s'), '');
             resultEvents.employeeIDs.add(employeeID);
+            int maxDays = 1;
+            int realMonth = month;
             for (var indexD in indexedDays) {
               int index = indexD.$1;
               int days = indexD.$2;
-              DateTime anchor = DateTime(year, month, days);
+              if (days > maxDays) {
+                maxDays = days;
+              }
+              if (days < maxDays) {
+                realMonth = month + 1;
+              }
+              DateTime anchor = DateTime(year, realMonth, days);
               String event =
                   row[index].toString().replaceAll(RegExp(r'\s+\b|\b\s'), '');
+              // if (employeeID.contains('1430')) {
+              //   print('day: $anchor, event: $event');
+              // }
               int locIndex = event.indexOf(')');
               if (locIndex >= 0) {
                 String location = event.substring(0, locIndex + 1);
