@@ -33,6 +33,15 @@ class WorkingEvent {
       print('$value');
     });
   }
+
+  WorkingEvent.of(WorkingEvent other) {
+    eventMap = LinkedHashMap(
+      equals: isSameDay,
+      hashCode: (key) => key.day * 1000000 + key.month * 10000 + key.year,
+    )..addAll(other.eventMap);
+    employeeIDs = List.from(other.employeeIDs);
+    locations = List.from(other.locations);
+  }
 }
 
 class CalendarAppBloc extends Bloc<CalendarAppEvent, WorkingEvent> {
@@ -160,21 +169,30 @@ class CalendarAppBloc extends Bloc<CalendarAppEvent, WorkingEvent> {
         }
       }
       if (resultEvents.eventMap.isNotEmpty) {
-        resultEvents.eventMap.addAll(_workingEvent.eventMap);
-        for (var id in _workingEvent.employeeIDs) {
-          if (!resultEvents.employeeIDs.contains(id)) {
-            resultEvents.employeeIDs.add(id);
+        for (var parsedTime in resultEvents.eventMap.keys) {
+          if (_workingEvent.eventMap.containsKey(parsedTime)) {
+            if (parsedTime.month == month && parsedTime.year == year) {
+              _workingEvent.eventMap[parsedTime] =
+                  resultEvents.eventMap[parsedTime]!;
+            }
+          } else {
+            _workingEvent.eventMap[parsedTime] =
+                resultEvents.eventMap[parsedTime]!;
           }
         }
-        for (var loc in _workingEvent.locations) {
-          if (!resultEvents.locations.contains(loc)) {
-            resultEvents.locations.add(loc);
+        for (var id in resultEvents.employeeIDs) {
+          if (!_workingEvent.employeeIDs.contains(id)) {
+            _workingEvent.employeeIDs.add(id);
+          }
+        }
+        for (var loc in resultEvents.locations) {
+          if (!_workingEvent.locations.contains(loc)) {
+            _workingEvent.locations.add(loc);
           }
         }
       }
       // ignore: invalid_use_of_visible_for_testing_member
-      emit(resultEvents);
-      _workingEvent = resultEvents;
+      emit(WorkingEvent.of(_workingEvent));
     }
   }
 }

@@ -149,6 +149,7 @@ class _CalendarState extends State<CalendarPage> {
                       if (workings != null && workings.isNotEmpty) {
                         workings.removeWhere((e) =>
                             e.$1 != _focusedEmployee || _isHoliday(e.$2));
+                        // print('eventLoader workings: $workings');
                         events.addAll(workings.map((e) => e.$2).toList());
                       }
                     }
