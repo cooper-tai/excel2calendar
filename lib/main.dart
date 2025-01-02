@@ -93,8 +93,11 @@ class _CalendarAppState extends State<CalendarApp> {
                   int.tryParse(fileName.substring(yearIndex + 1, monthIndex)) ??
                       0;
               if (fileYear > 0 && fileMonth > 0) {
-                _calendarAppBloc
-                    .add(CalendarMonthChanged(fileYear + 1911, fileMonth));
+                _calendarAppBloc.add(CalendarMonthChanged(
+                  fileYear + 1911,
+                  fileMonth,
+                  isForceUpdate: true,
+                ));
               }
             } else {
               print('Failed to parse $fileName from 3rd shared');

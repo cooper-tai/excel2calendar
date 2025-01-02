@@ -15,7 +15,8 @@ class CalendarReceiveFile extends CalendarAppEvent {}
 class CalendarMonthChanged extends CalendarAppEvent {
   final int year;
   final int month;
-  CalendarMonthChanged(this.year, this.month);
+  final bool isForceUpdate;
+  CalendarMonthChanged(this.year, this.month, {this.isForceUpdate = false});
 }
 
 class WorkingEvent {
@@ -53,7 +54,10 @@ class CalendarAppBloc extends Bloc<CalendarAppEvent, WorkingEvent> {
     _workingEvent = WorkingEvent();
     _loadFile(DateTime.now());
     on<CalendarMonthChanged>((event, emit) {
-      _loadFile(DateTime(event.year, event.month + 1, 0));
+      _loadFile(
+        DateTime(event.year, event.month + 1, 0),
+        isForceUpdate: event.isForceUpdate,
+      );
     });
   }
 
